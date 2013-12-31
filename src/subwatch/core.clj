@@ -1,6 +1,6 @@
 (ns subwatch.core)
 
-(def ^:private sub-watches (atom {}))
+(def sub-watches (atom {}))
 
 (defn- fire-sub-watches
   [_key ref old new]
@@ -18,11 +18,10 @@
    watch.  The watch fn will only be fired when that portion of the
    data-structure has changed."
   [ref key keys f]
-  (swap! sub-watches (fn [sub-watches]
-                       (if (contains? sub-watches ref)
-                         (assoc-in sub-watches ref [key [keys f]])
-                         (assoc sub-watches ref {key [keys f]}))))
-  (add-watch ref ::sub-watcher fire-sub-watches))
+  (if (contains? @sub-watches ref)
+    (swap! sub-watches #(update-in % [ref] (fn [m] (conj m [key [keys f]]))))
+    (do (swap! sub-watches #(assoc % ref {key [keys f]}))
+        (add-watch ref ::sub-watcher fire-sub-watches))))
 
 (defn remove-sub-watch
   "This function is to add-sub-watch as clojure.core/remove-watch is to
