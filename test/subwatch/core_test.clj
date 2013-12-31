@@ -40,3 +40,26 @@
       (reset! test-atom val2)
       (is (= @out-atom nil)))))
 
+(deftest test-removing-sub-section
+  (testing "Removing watched section"
+    (let [val {:a {:b {:c {:d 0}}}}
+          test-atom (atom val)
+          out-atom (atom nil)
+          store-change (fn [k r o n]
+                         (reset! out-atom [k r o n]))]
+      (add-sub-watch test-atom ::test-removal [:a :b :c :d] store-change)
+      (reset! test-atom {:a 5})
+      (is (= @out-atom [::test-removal test-atom 0 nil])))))
+
+(deftest test-readding
+  (testing "Re-adding watched section"
+    (let [val1 {:a {:b {:c {:d 0}}}}
+          val2 {:a {:b {:c {:d 5}}}}
+          test-atom (atom val1)
+          out-atom (atom nil)
+          store-change (fn [k r o n]
+                         (reset! out-atom [k r o n]))]
+      (add-sub-watch test-atom ::test-readd [:a :b :c :d] store-change)
+      (reset! test-atom {:a 99})
+      (reset! test-atom val2)
+      (is (= @out-atom [::test-readd test-atom nil 5])))))
