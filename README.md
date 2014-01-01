@@ -8,6 +8,8 @@ to find out.
 
 ## Installation
 
+Add the following to the dependencies in your project.clj:
+
 ```clojure
 [subwatch "1.0.0"]
 ```
