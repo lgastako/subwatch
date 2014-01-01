@@ -6,6 +6,12 @@ easier.
 I'm not sure if this whole nested atom thing is a good idea or not but I'm going
 to find out.
 
+## Installation
+
+```clojure
+[subwatch "1.0.0"]
+```
+
 ## Usage
 
 Require it in the REPL:
